@@ -23,6 +23,7 @@ Aplicação completa (FastAPI + React) para coletar percepções SWOT do time de
    - `ADMIN_USER` / `ADMIN_PASSWORD`: credenciais de login do painel admin.
    - `SECRET_KEY`: chave para assinar JWT.
    - `GOOGLE_APPLICATION_CREDENTIALS`: caminho para `credentials.json` (padrão `./credentials.json`).
+   - `CORS_ORIGINS`: lista de origens permitidas para o frontend, separadas por vírgula (ex.: `http://localhost:5173,http://127.0.0.1:5173`).
 
 2. Posicione o arquivo `credentials.json` da Service Account no caminho configurado (ou mantenha no diretório `backend/`). Garanta que essa conta tenha permissão de edição na planilha.
 
