@@ -1,9 +1,7 @@
 from pathlib import Path
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-
 from app.core.config import get_settings
 from app.routes import auth, planejamento
 
@@ -24,11 +22,9 @@ app.add_middleware(
 app.include_router(auth.router, prefix=settings.auth_prefix, tags=["Auth"])
 app.include_router(planejamento.router, prefix=settings.api_prefix, tags=["Planejamento"])
 
-
 @app.get("/health")
 async def health_check():
     return {"status": "ok"}
-
 
 # ==========================
 # Servir frontend buildado (Vite) via FastAPI
