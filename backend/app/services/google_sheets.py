@@ -39,10 +39,13 @@ def append_registro(payload: PlanejamentoCreate) -> PlanejamentoRecord:
             payload.fraquezas,
             payload.oportunidades,
             payload.ameacas,
+            payload.expectativas_2026,
+            payload.contribuicao_2026,
         ]
     ]
     body = {"values": values}
-    sheet_range = f"{settings.sheet_name}!A:I"
+    # Agora temos colunas de A até K (11 colunas)
+    sheet_range = f"{settings.sheet_name}!A:K"
     sheet_service.values().append(
         spreadsheetId=settings.spreadsheet_id,
         range=sheet_range,
@@ -50,13 +53,18 @@ def append_registro(payload: PlanejamentoCreate) -> PlanejamentoRecord:
         insertDataOption="INSERT_ROWS",
         body=body,
     ).execute()
-    return PlanejamentoRecord(timestamp=datetime.fromisoformat(timestamp), **payload.dict())
-
+    return PlanejamentoRecord(
+        timestamp=datetime.fromisoformat(timestamp),
+        **payload.dict(),
+    )
 
 def list_registros() -> List[PlanejamentoRecord]:
     sheet_service = _get_sheet_service()
-    sheet_range = f"{settings.sheet_name}!A:I"
-    result = sheet_service.values().get(spreadsheetId=settings.spreadsheet_id, range=sheet_range).execute()
+    sheet_range = f"{settings.sheet_name}!A:K"
+    result = sheet_service.values().get(
+        spreadsheetId=settings.spreadsheet_id,
+        range=sheet_range,
+    ).execute()
     values: List[List[str]] = result.get("values", [])
     if not values:
         return []
@@ -64,13 +72,22 @@ def list_registros() -> List[PlanejamentoRecord]:
     header = values[0]
     data_rows = values[1:]
     registros: List[PlanejamentoRecord] = []
+
     for row in data_rows:
-        row_dict: Dict[str, Any] = {col: row[idx] if idx < len(row) else "" for idx, col in enumerate(header)}
+        row_dict: Dict[str, Any] = {
+            col: row[idx] if idx < len(row) else ""
+            for idx, col in enumerate(header)
+        }
         raw_timestamp = row_dict.get("timestamp")
         try:
-            parsed_timestamp = datetime.fromisoformat(raw_timestamp) if raw_timestamp else datetime.utcnow()
+            parsed_timestamp = (
+                datetime.fromisoformat(raw_timestamp)
+                if raw_timestamp
+                else datetime.utcnow()
+            )
         except ValueError:
             parsed_timestamp = datetime.utcnow()
+
         registros.append(
             PlanejamentoRecord(
                 timestamp=parsed_timestamp,
@@ -82,6 +99,8 @@ def list_registros() -> List[PlanejamentoRecord]:
                 fraquezas=row_dict.get("fraquezas", ""),
                 oportunidades=row_dict.get("oportunidades", ""),
                 ameacas=row_dict.get("ameacas", ""),
+                expectativas_2026=row_dict.get("expectativas_2026", ""),
+                contribuicao_2026=row_dict.get("contribuicao_2026", ""),
             )
         )
     return registros

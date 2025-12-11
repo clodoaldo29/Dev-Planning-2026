@@ -4,7 +4,11 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, Query
 
 from app.core.security import verify_token
-from app.schemas.planejamento import PlanejamentoCreate, PlanejamentoListResponse, PlanejamentoRecord
+from app.schemas.planejamento import (
+    PlanejamentoCreate,
+    PlanejamentoListResponse,
+    PlanejamentoRecord,
+)
 from app.services import google_sheets
 
 router = APIRouter()
@@ -20,9 +24,18 @@ async def create_planejamento(payload: PlanejamentoCreate) -> PlanejamentoRecord
 async def list_planejamentos(
     funcao: Optional[str] = None,
     tempo_empresa: Optional[str] = None,
-    start_date: Optional[str] = Query(None, description="Filtrar timestamp inicial (YYYY-MM-DD)"),
-    end_date: Optional[str] = Query(None, description="Filtrar timestamp final (YYYY-MM-DD)"),
-    search: Optional[str] = Query(None, description="Busca textual em campos SWOT"),
+    start_date: Optional[str] = Query(
+        None,
+        description="Filtrar timestamp inicial (YYYY-MM-DD)",
+    ),
+    end_date: Optional[str] = Query(
+        None,
+        description="Filtrar timestamp final (YYYY-MM-DD)",
+    ),
+    search: Optional[str] = Query(
+        None,
+        description="Busca textual em campos SWOT e Expectativas/Contribuição",
+    ),
     _: str = Depends(verify_token),
 ) -> PlanejamentoListResponse:
     registros = google_sheets.list_registros()
@@ -42,12 +55,24 @@ async def list_planejamentos(
             continue
         if tempo_empresa and tempo_empresa.lower() not in r.tempo_empresa.lower():
             continue
+
         if search:
-            blob = " ".join([r.forcas, r.fraquezas, r.oportunidades, r.ameacas]).lower()
+            blob = " ".join(
+                [
+                    r.forcas or "",
+                    r.fraquezas or "",
+                    r.oportunidades or "",
+                    r.ameacas or "",
+                    getattr(r, "expectativas_2026", "") or "",
+                    getattr(r, "contribuicao_2026", "") or "",
+                ]
+            ).lower()
             if search.lower() not in blob:
                 continue
+
         if not in_date_range(r):
             continue
+
         filtered.append(r)
 
     return PlanejamentoListResponse(total=len(filtered), items=filtered)
