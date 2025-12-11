@@ -46,4 +46,3 @@ dist_path = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist"
 if dist_path.exists():
     # html=True garante que index.html seja retornado para rotas SPA
     app.mount("/", StaticFiles(directory=dist_path, html=True), name="static")
-
