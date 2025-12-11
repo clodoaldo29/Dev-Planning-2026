@@ -12,7 +12,7 @@ app = FastAPI(title="Planejamento Estratégico 2026", version="1.0.0")
 # Middleware de CORS (mantido)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=["*"],  # liberar todos os origins (DEV)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

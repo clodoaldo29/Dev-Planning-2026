@@ -1,11 +1,10 @@
 # Python
-backend/.venv
+.venv
 __pycache__
 *.pyc
 
 # Env files
 .env
-credentials.json
 
 # Node
 frontend/node_modules
