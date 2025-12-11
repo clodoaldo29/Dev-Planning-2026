@@ -1,14 +1,18 @@
 # Python
-.venv
-__pycache__
+.venv/
+__pycache__/
 *.pyc
 
-# Env files
-.env
+# Environment files (never commit)
+backend/.env
 
 # Node
 frontend/node_modules
 frontend/dist
 
+# Google credentials (sensitive)
 backend/secrets/
 *.json
+
+# DO NOT IGNORE ALL JSON FILES GLOBALLY
+# *.json   <-- REMOVE THIS LINE

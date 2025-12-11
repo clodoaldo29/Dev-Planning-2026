@@ -16,7 +16,7 @@ class Settings(BaseSettings):
         default_factory=lambda: ["http://localhost:5173", "http://127.0.0.1:5173"]
     )
     google_credentials_path: str = Field(
-        "./credentials.json",
+        "./secrets/service-account.json",
         env="GOOGLE_APPLICATION_CREDENTIALS",
         description="Path to the Google service account credentials JSON file.",
     )
